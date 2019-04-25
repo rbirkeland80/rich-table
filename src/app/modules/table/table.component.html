@@ -1,0 +1,24 @@
+<ul *ngIf="tableData.columns && tableData.columns.length; else loading">
+  <li>
+    <div class="header">
+      <span *ngFor="let column of tableData.columns"
+         [ngStyle]="column.inlineStyles"
+         [ngClass]="column.className">
+         {{ column.columnName }}
+      </span>
+    </div>
+  </li>
+  <li *ngIf="!tableData.data || !tableData.data.length" class="loading-image"></li>
+  <li *ngFor="let row of tableData.data; let i = index">
+    <div class="body-row">
+      <span *ngFor="let column of tableData.columns; let y = index"
+        [ngStyle]="column.inlineStyles"
+        [ngClass]="column.className">
+        <span>{{ row[column.linkerProperty] }}</span>
+      </span>
+    </div>
+  </li>
+</ul>
+<ng-template #loading>
+  <div class="loading-image"></div>
+</ng-template>

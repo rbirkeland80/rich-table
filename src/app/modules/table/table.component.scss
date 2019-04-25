@@ -1,0 +1,66 @@
+$color-grey-border: #c8c8c8;
+$color-blue-main: #00aeef;
+$color-blue-light: #d2f2ff;
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  line-height: 2.5;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-flow: column;
+  border-bottom: 1px solid $color-grey-border;
+
+  div {
+    padding: 0 10px;
+    display: flex;
+    width: calc(100% - 20px);
+
+    &.header {
+      font-weight: bold;
+    }
+
+    &.body-row:hover {
+      cursor: pointer;
+      background-color: $color-blue-light;
+    }
+
+    > span {
+      display: inline-block;
+      min-width: 125px;
+    }
+  }
+}
+
+.loading-image {
+  height: 4px;
+  width: 40%;
+  margin: 10px auto;
+  position: relative;
+  overflow: hidden;
+  background-color: $color-grey-border;
+
+  &:before {
+    display: block;
+    position: absolute;
+    content: "";
+    left: -200px;
+    width: 200px;
+    height: 4px;
+    background-color: $color-blue-main;
+    animation: loading 2s linear infinite
+  }
+}
+
+@keyframes loading {
+  from {left: -200px; width: 30%;}
+  50% {width: 30%;}
+  70% {width: 70%;}
+  80% { left: 50%;}
+  95% {left: 120%;}
+  to {left: 100%;}
+}
