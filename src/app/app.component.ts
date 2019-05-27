@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { IDataDefModel } from './modules/table/interfaces/data.interface';
@@ -8,7 +8,8 @@ import { IColumnDefModel } from './modules/table/interfaces/column.interface';
   // tslint:disable-next-line
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
   columns = new Subject<IColumnDefModel[]>();
@@ -19,27 +20,30 @@ export class AppComponent implements OnInit {
       this.data.next([
         {
           test1: 'Data 1',
-          test2: 'Data 2',
-          test3: 'Data 3',
+          test2: null,
+          test3: true
         }
       ]);
-    }, 10000);
+    }, 100);
 
     setTimeout(() => {
       this.columns.next([
         {
           columnName: 'Test1',
-          linkerProperty: 'test1'
+          linkerProperty: 'test1',
+          inlineStyles: { 'background-color': 'grey', color: 'white' }
         },
         {
           columnName: 'Test2',
-          linkerProperty: 'test3'
+          linkerProperty: 'test2',
+          classNames: 'active'
         },
         {
           columnName: 'Test3',
-          linkerProperty: 'test3'
+          linkerProperty: 'test3',
+          classNames: ['disabled', 'invalid']
         }
       ]);
-    }, 5000);
+    }, 500);
   }
 }

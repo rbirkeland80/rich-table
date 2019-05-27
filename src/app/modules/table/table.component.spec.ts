@@ -56,7 +56,7 @@ describe('TableComponent', () => {
     });
   });
 
-  describe('Input validation', () => {
+  describe('Component Creation', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(TableComponent);
       component = fixture.componentInstance;

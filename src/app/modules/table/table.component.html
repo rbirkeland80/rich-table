@@ -3,7 +3,7 @@
     <div class="header">
       <span *ngFor="let column of tableData.columns"
          [ngStyle]="column.inlineStyles"
-         [ngClass]="column.className">
+         [ngClass]="column.classNames">
          {{ column.columnName }}
       </span>
     </div>
@@ -13,7 +13,7 @@
     <div class="body-row">
       <span *ngFor="let column of tableData.columns; let y = index"
         [ngStyle]="column.inlineStyles"
-        [ngClass]="column.className">
+        [ngClass]="column.classNames">
         <span>{{ row[column.linkerProperty] }}</span>
       </span>
     </div>

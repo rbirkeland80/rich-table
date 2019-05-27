@@ -1,3 +1,5 @@
 export interface IDataDefModel {
-  [key: string]: string;
+  [key: string]: TDataType;
 }
+
+export type TDataType = string | boolean | number;
