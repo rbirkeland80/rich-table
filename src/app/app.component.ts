@@ -3,6 +3,8 @@ import { Subject } from 'rxjs';
 
 import { IDataDefModel } from './modules/table/interfaces/data.interface';
 import { IColumnDefModel } from './modules/table/interfaces/column.interface';
+import { rawData } from './modules/testMocks/mock-data.ts/data-mock.model';
+import { rawColumns } from './modules/testMocks/mock-data.ts/columns-mock.model';
 
 @Component({
   // tslint:disable-next-line
@@ -17,33 +19,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.data.next([
-        {
-          test1: 'Data 1',
-          test2: null,
-          test3: true
-        }
-      ]);
+      this.data.next(rawData);
     }, 100);
 
     setTimeout(() => {
-      this.columns.next([
-        {
-          columnName: 'Test1',
-          linkerProperty: 'test1',
-          inlineStyles: { 'background-color': 'grey', color: 'white' }
-        },
-        {
-          columnName: 'Test2',
-          linkerProperty: 'test2',
-          classNames: 'active'
-        },
-        {
-          columnName: 'Test3',
-          linkerProperty: 'test3',
-          classNames: ['disabled', 'invalid']
-        }
-      ]);
+      this.columns.next(rawColumns);
     }, 500);
   }
 }
