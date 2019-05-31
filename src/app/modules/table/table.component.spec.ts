@@ -1,18 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TableComponent } from './table.component';
-
-const columns: any = [
-  {
-    columnName: 'Test1',
-    linkerProperty: 'test1'
-  }
-];
-const data: any = [
-  {
-    test1: 'Data 1'
-  }
-];
+import { TableModelService } from './services/tableModel.service';
+import { MockDynamicPipe } from '../testMocks/pipes.mocks.spec';
+import { MockTableModelService } from '../testMocks/services.mocks.spec';
+import { rawColumns, columnMockModel } from '../testMocks/mock-data.ts/columns-mock.model';
+import { rawData, dataMockModel } from '../testMocks/mock-data.ts/data-mock.model';
 
 describe('TableComponent', () => {
   let component: TableComponent;
@@ -20,60 +13,49 @@ describe('TableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TableComponent ]
+      declarations: [
+        TableComponent,
+        MockDynamicPipe
+      ],
+      providers: [
+        {
+          provide: TableModelService,
+          useClass: MockTableModelService
+        }
+      ]
     })
     .compileComponents();
   }));
 
-  describe('Input validation', () => {
-    it('should throw missing input', () => {
-      expect(() => {
-        fixture = TestBed.createComponent(TableComponent);
-        fixture.detectChanges();
-      }).toThrowError('Please pass in columns and data to the rich-table');
-    });
-
-    it('should throw invalid column input', () => {
-      expect(() => {
-        fixture = TestBed.createComponent(TableComponent);
-        component = fixture.componentInstance;
-        // @ts-ignore
-        component.columns = 'invalid';
-        component.data = data;
-        fixture.detectChanges();
-      }).toThrowError('Invalid input type: Columns should either be IColumnDefModel[] or Observable<IColumnDefModel[]');
-    });
-
-    it('should throw invalid data input', () => {
-      expect(() => {
-        fixture = TestBed.createComponent(TableComponent);
-        component = fixture.componentInstance;
-        component.columns = columns;
-        // @ts-ignore
-        component.data = 'invalid';
-        fixture.detectChanges();
-      }).toThrowError('Invalid input type: Data should either be IDataDefModel[] or Observable<IDataDefModel[]');
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TableComponent);
+    component = fixture.componentInstance;
+    component.columns = rawColumns;
+    component.data = rawData;
+    fixture.detectChanges();
   });
 
-  describe('Component Creation', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(TableComponent);
-      component = fixture.componentInstance;
-      component.columns = columns;
-      component.data = data;
-      fixture.detectChanges();
-    });
+  it('should call validateInput of TableModelService', () => {
+    spyOn(component.tableModelService, 'validateInput').and.stub();
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+    component.ngOnInit();
 
-    it('should create tableData', () => {
-      expect(component.tableData).toBeDefined();
-      expect(component.tableData.columns).toEqual(columns);
-      expect(component.tableData.data).toEqual(data);
-    });
+    expect(component.tableModelService.validateInput).toHaveBeenCalledWith(rawColumns, rawData);
   });
 
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should create tableData', async(() => {
+    spyOn(component.tableModelService, 'buildTableDataObservable').and.callThrough();
+
+    component.ngOnInit();
+
+    expect(component.tableModelService.buildTableDataObservable).toHaveBeenCalled();
+    expect(component.tableData).toBeDefined();
+    expect(component.tableData.columns).toEqual(columnMockModel);
+    expect(component.tableData.data).toEqual(dataMockModel);
+  }));
 });
+

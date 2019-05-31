@@ -1,20 +1,20 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Observable, isObservable,  of } from 'rxjs';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Observable, merge } from 'rxjs';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
+import { TableModelService } from './services/tableModel.service';
 import { IColumnDefModel } from './interfaces/column.interface';
 import { IDataDefModel } from './interfaces/data.interface';
+import { ITableData, ITableObservableData } from './interfaces/tableData.interface';
+import { InputValueType } from './enums/inputValueTypes.enum';
 
-interface ITableData {
-  columns?: IColumnDefModel[];
-  data?: IDataDefModel[];
-}
-
+@AutoUnsubscribe()
 @Component({
   selector: 'rich-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnDestroy {
 
   @Input() columns: IColumnDefModel[] | Observable<IColumnDefModel[]>;
   @Input() data: IDataDefModel[] | Observable<IDataDefModel[]>;
@@ -24,38 +24,32 @@ export class TableComponent implements OnInit {
     data: []
   };
 
-  constructor() { }
+  constructor(readonly tableModelService: TableModelService) { }
 
   ngOnInit() {
-    this.validateInput();
-    this.preprocessInputs();
+    this.tableModelService.validateInput(this.columns, this.data);
+    this.setTableData();
   }
 
-  private preprocessInputs() {
-    Object.keys(this.tableData).forEach((key: string) => {
-      const inputValue = this[key];
-      const dataObservable = Array.isArray(inputValue)
-        ? of(inputValue)
-        : inputValue;
+  ngOnDestroy() {}
 
-      dataObservable.subscribe((data: any) => {
-        this.tableData[key] = data;
-      });
-    });
-  }
+  private setTableData(): void {
+    const data$ = this.tableModelService.buildTableDataObservable(InputValueType.DATA, this.data);
+    const columns$ = this.tableModelService.buildTableDataObservable(InputValueType.COLUMNS, this.columns);
 
-  private validateInput() {
-    if (!this.columns || !this.data) {
-      throw new Error('Please pass in columns and data to the rich-table');
-    }
-
-    if (!isObservable(this.columns) && !Array.isArray(this.columns)) {
-      throw new Error('Invalid input type: Columns should either be IColumnDefModel[] or Observable<IColumnDefModel[]');
-    }
-
-    if (!isObservable(this.data) && !Array.isArray(this.data)) {
-      throw new Error('Invalid input type: Data should either be IDataDefModel[] or Observable<IDataDefModel[]');
-    }
+    merge(columns$, data$).subscribe(
+      (data: ITableObservableData) => {
+        this.tableData[data.key] = data.data;
+      },
+      (error) => {
+        throw new Error(error);
+      },
+      () => {
+        this.tableData.data.forEach((item) => {
+          item.formatData(this.tableData.columns);
+        });
+      }
+    );
   }
 
 }
