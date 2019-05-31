@@ -14,7 +14,7 @@
       <span *ngFor="let column of tableData.columns; let y = index"
         [ngStyle]="column.inlineStyles"
         [ngClass]="column.classNames">
-        <span>{{ row[column.linkerProperty] }}</span>
+        <span>{{ row[column.linkerProperty] | dynamicPipe: column.pipe:column.pipeParams }}</span>
       </span>
     </div>
   </li>
